@@ -6,17 +6,16 @@ import pickle
 
 
 def pca_this(df):
-    struc_cols = df.filter(regex="^has_superstructure", axis=1).columns
-    sec_cols = df.filter(regex="^has_secondary_use_", axis=1).columns
+    sel_cols = df.filter(regex="^has_superstructure|^has_secondary_use_", axis=1).columns
 
-    X = df[struc_cols.append(sec_cols)]
+    X = df[sel_cols]
     ss = StandardScaler().fit(X)
     Xs = ss.transform(X)
     Xs = pd.DataFrame(Xs, columns = X.columns.values)
 
     #fit PCA
 
-    pca = PCA()
+    pca = PCA(n_components = 4, random_state = 42)
     pca.fit(Xs)
 
     #find eigenvectors / coefficients of PCs
@@ -24,12 +23,10 @@ def pca_this(df):
 
     #getting PC columns
     pcs = pca.transform(Xs)
-    pcs = pd.DataFrame(pcs, columns=['PC'+str(i+1) for i in range(len(X.columns))], index=X.index)
+    pcs = pd.DataFrame(pcs, columns=['PC'+str(i+1) for i in range(4)], index=X.index)
+    pcs['building_id'] = df['building_id']
 
-    pcs_x = pcs.iloc[:,:4]
-    pcs_x['building_id'] = df['building_id']
-
-    return pcs_x, pca, ss
+    return pcs, pca, ss
 
 def dummify(df):
     numdf = df[['building_id','count_floors_pre_eq','age','area_percentage','height_percentage','count_families']]
@@ -58,9 +55,10 @@ if __name__=='__main__':
     pca_model_path = "../model/pca_model.pkl"
     standardize_model_path = "../model/standardize_model.pkl"
     df = pd.read_csv(xtrain_path)
-    pcs_x, pca_model, standardize_model = pca_this(df)
+    pcs, pca_model, standardize_model = pca_this(df)
     num_dum = dummify(df)
-    pd.merge(num_dum,pcs_x,how='inner',on='building_id').to_csv(mod_xtrain_path, index=False)
+    pd.merge(num_dum,pcs,how='inner',on='building_id').to_csv(mod_xtrain_path, index=False)
+    print ("PCA training values exported")
     with open(pca_model_path, 'wb') as pickle_file:
         pickle.dump(pca_model, pickle_file)
     with open(standardize_model_path, 'wb') as pickle_file:
