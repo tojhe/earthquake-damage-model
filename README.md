@@ -19,7 +19,7 @@
 * modules/model_deployment.py
 
 ## Current Score as of 7th Jan 2020
-![Score](./submission_score.png)
+![Score](./submission_score.PNG)
 
 Latest model used: Gradient Boosted Decision Tree
 
