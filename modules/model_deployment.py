@@ -55,14 +55,15 @@ def model_predict(pickle_model, x_test_clean):
     pred_df = pred_df[['building_id','prediction']]
 
     pred_df.columns = ['building_id', 'damage_grade']
+    pred_df['damage_grade'] = pred_df['damage_grade'].astype('int')
     #write prediction to csv
     pred_df.to_csv("../data/predictions.csv", index=False)
 
     return pred_df
 
 def check_pred_acc(y_test, pred_df):
-    print("Model accuracy score:", accuracy_score(y_test['damage_grade'], pred_df['prediction']))
-    print("Model F1 score:", f1_score(y_test['damage_grade'], pred_df['prediction'], average='micro'))
+    print("Model accuracy score:", accuracy_score(y_test['damage_grade'], pred_df['damage_grade']))
+    print("Model F1 score:", f1_score(y_test['damage_grade'], pred_df['damage_grade'], average='micro'))
     print("Baseline score:", max(y_test['damage_grade'].value_counts()/len(y_test['damage_grade'])))
 
 if __name__=='__main__':
