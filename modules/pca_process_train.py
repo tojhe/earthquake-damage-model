@@ -1,4 +1,4 @@
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.decomposition import PCA
 import pandas as pd
 import pickle
@@ -8,10 +8,15 @@ import pickle
 def pca_this(df):
     sel_cols = df.filter(regex="^has_superstructure|^has_secondary_use_", axis=1).columns
 
-    X = df[sel_cols]
-    ss = StandardScaler().fit(X)
-    Xs = ss.transform(X)
-    Xs = pd.DataFrame(Xs, columns = X.columns.values)
+    # ---- standard scaler deprecated ----- #
+    # X = df[sel_cols]
+    # ss = StandardScaler().fit(X)
+    # Xs = ss.transform(X)
+    # Xs = pd.DataFrame(Xs, columns = X.columns.values)
+    # ------------------------------------- #
+
+
+
 
     #fit PCA
 
@@ -40,9 +45,8 @@ def dummify(df):
             if e < 0.05 * len(df):
                 otherls.append(i)
         objdf.loc[objdf[col].isin(otherls), col] = 'Others'
-    objdf['building_id'] = df['building_id']
 
-    dummy = pd.get_dummies(objdf[['building_id', 'geo_level_1_id', 'land_surface_condition', 'foundation_type',
+    dummy = pd.get_dummies(objdf[['geo_level_1_id', 'land_surface_condition', 'foundation_type',
                                   'roof_type', 'ground_floor_type', 'plan_configuration', 'position']],
                            columns=['geo_level_1_id', 'land_surface_condition', 'foundation_type',
                                     'roof_type', 'ground_floor_type', 'plan_configuration', 'position'], drop_first=True,)
@@ -54,10 +58,11 @@ if __name__=='__main__':
     mod_xtrain_path = "../data/xtrain_pca.csv"
     pca_model_path = "../model/pca_model.pkl"
     standardize_model_path = "../model/standardize_model.pkl"
-    df = pd.read_csv(xtrain_path)
+
+    df = pd.read_csv(xtrain_path, index_col="building_id")
     pcs, pca_model, standardize_model = pca_this(df)
     num_dum = dummify(df)
-    pd.merge(num_dum,pcs,how='inner',on='building_id').to_csv(mod_xtrain_path, index=False)
+    pd.merge(num_dum,pcs,how='inner',right_index=True, left_index=True).to_csv(mod_xtrain_path)
     print ("PCA training values exported")
     with open(pca_model_path, 'wb') as pickle_file:
         pickle.dump(pca_model, pickle_file)
