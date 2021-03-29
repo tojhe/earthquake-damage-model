@@ -110,7 +110,7 @@ protobuf==3.6.1
 psutil==5.6.7
 py4j==0.10.7
 pycparser==2.19
-Pygments==2.3.1
+Pygments==2.7.4
 PyJWT==1.7.1
 pylint==2.3.1
 pyparsing==2.3.1
