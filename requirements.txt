@@ -111,7 +111,7 @@ psutil==5.6.7
 py4j==0.10.7
 pycparser==2.19
 Pygments==2.3.1
-PyJWT==1.7.1
+PyJWT==2.4.0
 pylint==2.3.1
 pyparsing==2.3.1
 pyPdf==1.13
