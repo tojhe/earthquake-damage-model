@@ -84,7 +84,7 @@ mord==0.6
 more-itertools==8.0.2
 murmurhash==1.0.2
 mxnet==1.4.0.post0
-nbconvert==5.3.1
+nbconvert==6.5.1
 nbformat==4.4.0
 notebook==5.7.8
 numexpr==2.6.9
